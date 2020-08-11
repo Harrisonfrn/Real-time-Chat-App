@@ -37,14 +37,14 @@ class ConversationController extends AbstractController
 
 
     /**
-     * @Route("/{id}", name="getConversation")
+     * @Route("/", name="NewConversations", methods={"POST"})
      * @param Request $request
      * @return \symfony\Component\Httpfoundation\JsonResponse
      */
-    public function index(Request $re, int $id)
+    public function index(Request $re)
     {
         $otherUser = $re->get('otherUSer', 0);
-        $otherUser = $this->userRepository->find($id);
+        $otherUser = $this->userRepository->find($otherUser);
 
         if (is_null($otherUser)) {
             throw new \Exception("The user was not find");
@@ -92,5 +92,17 @@ class ConversationController extends AbstractController
         return $this->json([
             'id' => $conversation->getId()
         ], Response::HTTP_CREATED, [], []);
+    }
+
+    /**
+     * @Route("", name="getConversations", methods={"GET"})
+     */
+
+    public function getConvs(){
+
+        $conversations = $this->conversationRepository->findConversationsByUser($this->getUser()->getId());
+
+        
+        return $this->json($conversations);
     }
 }
